@@ -1,5 +1,4 @@
 import os
-import re
 import json
 from dotenv import load_dotenv
 from github import Github
@@ -31,14 +30,12 @@ def get_issues():
         yield issue
 
 def get_existing_ticket(event):
-    """Find the first ticket that matches"""
-    body = event.get("content")
-    #print("DEBUG get ",event)
+    """Find the first ticket whose agent name matches the event's agent name"""
+    name = find_name(event.get("content"))
+    if not name:
+        return None
     for issue in get_issues():
-        data = issue.body
-        #print("DEBUG check ",data)
-        name = find_name(data)
-        if name:
+        if find_name(issue.body) == name:
             return issue
 
     return None
